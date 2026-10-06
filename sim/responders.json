@@ -1,0 +1,16 @@
+{
+  "simulated": true,
+  "note": "Scripted SIMULATED responder behaviour. Scripts are keyed by the place a dispatch goes to (not by resource id), because live assignments depend on message arrival order. 'times' = how many dispatches to that place misbehave; later ones (the replacement team) behave normally.",
+  "timingSec": {
+    "ack": 8,
+    "enRoute": 20,
+    "blocked": 25,
+    "onScene": 50,
+    "resolved": 75,
+    "requesterConfirm": 90
+  },
+  "placeScripts": {
+    "Saidapet": { "behavior": "blocked", "times": 1, "roadOnly": true },
+    "Pallikaranai": { "behavior": "silent", "times": 1 }
+  }
+}
