@@ -1,0 +1,24 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+npm-debug.log*
+coverage/
+
+# n8n local data (workflows are tracked as exports in n8n/workflows/)
+.n8n/
+n8n/data/
+
+# Runtime output
+bench/results/
+sim/cache/
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
