@@ -1,0 +1,54 @@
+{
+  "simulated": true,
+  "note": "SIMULATED sensors. Offsets are scenario minutes from the first message. Water rises in the south; Adyar is near normal; Tambaram is low and falling, which contradicts the Tambaram flood claims.",
+  "gauges": [
+    {
+      "id": "G-PALLI", "name": "Pallikaranai marsh outlet", "lat": 12.9400, "lon": 80.2150,
+      "warningLevelM": 3.0, "dangerLevelM": 4.0,
+      "series": [
+        { "offsetMin": -180, "levelM": 2.50 }, { "offsetMin": -150, "levelM": 2.60 }, { "offsetMin": -120, "levelM": 2.70 },
+        { "offsetMin": -90, "levelM": 2.80 }, { "offsetMin": -60, "levelM": 2.90 }, { "offsetMin": -30, "levelM": 3.00 },
+        { "offsetMin": 0, "levelM": 3.10 }, { "offsetMin": 30, "levelM": 3.20 }, { "offsetMin": 60, "levelM": 3.30 },
+        { "offsetMin": 90, "levelM": 3.40 }, { "offsetMin": 120, "levelM": 3.45 }
+      ]
+    },
+    {
+      "id": "G-MUDI", "name": "Adyar river at Mudichur", "lat": 12.9156, "lon": 80.0702,
+      "warningLevelM": 3.0, "dangerLevelM": 4.0,
+      "series": [
+        { "offsetMin": -180, "levelM": 2.80 }, { "offsetMin": -150, "levelM": 2.90 }, { "offsetMin": -120, "levelM": 3.00 },
+        { "offsetMin": -90, "levelM": 3.10 }, { "offsetMin": -60, "levelM": 3.20 }, { "offsetMin": -30, "levelM": 3.30 },
+        { "offsetMin": 0, "levelM": 3.40 }, { "offsetMin": 30, "levelM": 3.50 }, { "offsetMin": 60, "levelM": 3.60 },
+        { "offsetMin": 90, "levelM": 3.65 }, { "offsetMin": 120, "levelM": 3.70 }
+      ]
+    },
+    {
+      "id": "G-ADYAR", "name": "Adyar river at Kotturpuram", "lat": 13.0150, "lon": 80.2300,
+      "warningLevelM": 3.0, "dangerLevelM": 4.0,
+      "series": [
+        { "offsetMin": -180, "levelM": 2.66 }, { "offsetMin": -150, "levelM": 2.68 }, { "offsetMin": -120, "levelM": 2.70 },
+        { "offsetMin": -90, "levelM": 2.70 }, { "offsetMin": -60, "levelM": 2.71 }, { "offsetMin": -30, "levelM": 2.72 },
+        { "offsetMin": 0, "levelM": 2.72 }, { "offsetMin": 30, "levelM": 2.71 }, { "offsetMin": 60, "levelM": 2.70 },
+        { "offsetMin": 90, "levelM": 2.70 }, { "offsetMin": 120, "levelM": 2.69 }
+      ]
+    },
+    {
+      "id": "G-TAMB", "name": "Tambaram lake weir", "lat": 12.9249, "lon": 80.1050,
+      "warningLevelM": 3.0, "dangerLevelM": 4.0,
+      "series": [
+        { "offsetMin": -180, "levelM": 2.40 }, { "offsetMin": -150, "levelM": 2.35 }, { "offsetMin": -120, "levelM": 2.30 },
+        { "offsetMin": -90, "levelM": 2.25 }, { "offsetMin": -60, "levelM": 2.20 }, { "offsetMin": -30, "levelM": 2.15 },
+        { "offsetMin": 0, "levelM": 2.10 }, { "offsetMin": 30, "levelM": 2.05 }, { "offsetMin": 60, "levelM": 2.00 },
+        { "offsetMin": 90, "levelM": 1.95 }, { "offsetMin": 120, "levelM": 1.90 }
+      ]
+    }
+  ],
+  "rainfall": [
+    { "areaId": "velachery", "name": "Velachery", "lat": 12.9815, "lon": 80.2180, "series": [{ "offsetMin": -180, "mmLast3h": 40 }, { "offsetMin": 0, "mmLast3h": 48 }] },
+    { "areaId": "pallikaranai", "name": "Pallikaranai", "lat": 12.9349, "lon": 80.2137, "series": [{ "offsetMin": -180, "mmLast3h": 38 }, { "offsetMin": 0, "mmLast3h": 45 }] },
+    { "areaId": "mudichur", "name": "Mudichur", "lat": 12.9156, "lon": 80.0702, "series": [{ "offsetMin": -180, "mmLast3h": 44 }, { "offsetMin": 0, "mmLast3h": 52 }] },
+    { "areaId": "saidapet", "name": "Saidapet", "lat": 13.0213, "lon": 80.2231, "series": [{ "offsetMin": -180, "mmLast3h": 14 }, { "offsetMin": 0, "mmLast3h": 12 }] },
+    { "areaId": "kotturpuram", "name": "Kotturpuram", "lat": 13.0186, "lon": 80.2413, "series": [{ "offsetMin": -180, "mmLast3h": 11 }, { "offsetMin": 0, "mmLast3h": 10 }] },
+    { "areaId": "tambaram", "name": "Tambaram", "lat": 12.9249, "lon": 80.1000, "series": [{ "offsetMin": -180, "mmLast3h": 3 }, { "offsetMin": 0, "mmLast3h": 1 }] }
+  ]
+}
