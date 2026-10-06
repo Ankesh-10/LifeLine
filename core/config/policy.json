@@ -1,0 +1,14 @@
+{
+  "mode": "assisted",
+  "minExtractionConfidence": 0.6,
+  "approvalRequiredWhen": {
+    "evidenceStatus": ["contradicted"],
+    "evidenceConflict": true,
+    "staleEvidence": true,
+    "lowExtractionConfidence": true,
+    "lastAvailableOfType": true
+  },
+  "alwaysRequireApproval": ["broadcast"],
+  "approvalTimeoutMinutes": 5,
+  "onApprovalTimeout": "escalate"
+}
