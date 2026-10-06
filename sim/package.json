@@ -1,0 +1,17 @@
+{
+  "name": "lifeline-sim",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SIMULATED flood scenario, sensor feeds and responder bot for the Lifeline demo.",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "feeds": "node mock-feeds.js",
+    "replay": "node replay.js",
+    "bot": "node responder-bot.js",
+    "test": "node --test"
+  }
+}

@@ -1,0 +1,654 @@
+{
+  "name": "Chennai urban flood",
+  "simulated": true,
+  "disclaimer": "SIMULATED data for a decision-support demo. Not real people, places are approximate.",
+  "referenceStart": "2026-12-01T03:00:00Z",
+  "truth": [
+    {
+      "id": "I1",
+      "place": "Velachery",
+      "needType": "rescue",
+      "people": 5,
+      "vulnerable": [
+        "elderly"
+      ],
+      "messageIds": [
+        "m01",
+        "m02",
+        "m03",
+        "m04",
+        "m05",
+        "m06",
+        "m07",
+        "m08"
+      ]
+    },
+    {
+      "id": "I2",
+      "place": "Mudichur",
+      "needType": "rescue",
+      "people": 9,
+      "vulnerable": [
+        "child"
+      ],
+      "messageIds": [
+        "m09",
+        "m10",
+        "m11",
+        "m12",
+        "m13",
+        "m14",
+        "m15"
+      ]
+    },
+    {
+      "id": "I3",
+      "place": "Saidapet",
+      "needType": "medical",
+      "people": 2,
+      "vulnerable": [
+        "injured"
+      ],
+      "messageIds": [
+        "m16",
+        "m17",
+        "m18",
+        "m19"
+      ]
+    },
+    {
+      "id": "I4",
+      "place": "Pallikaranai",
+      "needType": "rescue",
+      "people": 4,
+      "vulnerable": [
+        "disabled"
+      ],
+      "messageIds": [
+        "m20",
+        "m21",
+        "m22",
+        "m23",
+        "m24"
+      ]
+    },
+    {
+      "id": "I5",
+      "place": "Kotturpuram",
+      "needType": "supplies",
+      "people": 20,
+      "vulnerable": [],
+      "messageIds": [
+        "m25",
+        "m26",
+        "m27"
+      ]
+    },
+    {
+      "id": "I6",
+      "place": "Tambaram",
+      "needType": "rescue",
+      "people": 3,
+      "vulnerable": [],
+      "messageIds": [
+        "m28",
+        "m29",
+        "m30"
+      ]
+    }
+  ],
+  "messages": [
+    {
+      "id": "m01",
+      "offsetMin": 0,
+      "channel": "telegram",
+      "senderId": "u-I1-0",
+      "text": "Please help!! Water entered our house in Velachery, 5 of us including my 78 yr old grandmother, she cannot walk. water at knee level and rising",
+      "extraction": {
+        "needType": "rescue",
+        "people": 5,
+        "vulnerable": [
+          "elderly"
+        ],
+        "locationText": "Velachery",
+        "inWater": true,
+        "confidence": 0.91
+      },
+      "truthIncident": "I1"
+    },
+    {
+      "id": "m20",
+      "offsetMin": 3,
+      "channel": "telegram",
+      "senderId": "u-I4-0",
+      "text": "Pallikaranai - my brother is in a wheelchair, 4 of us stuck, water rising",
+      "extraction": {
+        "needType": "rescue",
+        "people": 4,
+        "vulnerable": [
+          "disabled"
+        ],
+        "locationText": "Pallikaranai",
+        "inWater": true,
+        "confidence": 0.94
+      },
+      "truthIncident": "I4"
+    },
+    {
+      "id": "m02",
+      "offsetMin": 7,
+      "channel": "telegram",
+      "senderId": "u-I1-0",
+      "text": "pls hurry still waiting, water now waist level",
+      "pin": {
+        "lat": 12.98024,
+        "lon": 80.21829
+      },
+      "extraction": {
+        "needType": "rescue",
+        "people": 5,
+        "vulnerable": [],
+        "locationText": null,
+        "inWater": true,
+        "confidence": 0.77
+      },
+      "truthIncident": "I1"
+    },
+    {
+      "id": "m09",
+      "offsetMin": 9,
+      "channel": "telegram",
+      "senderId": "u-I2-0",
+      "text": "Help us please, 9 people, 3 small kids, water inside house",
+      "extraction": {
+        "needType": "rescue",
+        "people": 9,
+        "vulnerable": [
+          "child"
+        ],
+        "locationText": null,
+        "inWater": true,
+        "confidence": 0.8
+      },
+      "truthIncident": "I2"
+    },
+    {
+      "id": "m03",
+      "offsetMin": 11,
+      "channel": "telegram",
+      "senderId": "u-I1-2",
+      "text": "Velacheri main road near bus stand flooded, family of 4 stuck on first floor",
+      "extraction": {
+        "needType": "rescue",
+        "people": 4,
+        "vulnerable": [],
+        "locationText": "Velacheri main road",
+        "inWater": true,
+        "confidence": 0.87
+      },
+      "truthIncident": "I1"
+    },
+    {
+      "id": "m21",
+      "offsetMin": 12,
+      "channel": "telegram",
+      "senderId": "u-I4-0",
+      "text": "Its getting worse, 3 of us on the stairs now",
+      "extraction": {
+        "needType": "rescue",
+        "people": 3,
+        "vulnerable": [],
+        "locationText": null,
+        "inWater": true,
+        "confidence": 0.8
+      },
+      "truthIncident": "I4"
+    },
+    {
+      "id": "m10",
+      "offsetMin": 15,
+      "channel": "telegram",
+      "senderId": "u-I2-0",
+      "text": "Sorry location is Mudichur, near the temple. 8 of us now on roof",
+      "extraction": {
+        "needType": "rescue",
+        "people": 8,
+        "vulnerable": [],
+        "locationText": "Mudichur, near the temple",
+        "inWater": true,
+        "confidence": 0.76
+      },
+      "truthIncident": "I2"
+    },
+    {
+      "id": "m22",
+      "offsetMin": 16,
+      "channel": "telegram",
+      "senderId": "u-I4-2",
+      "text": "marsh side houses flooded, 3 people need evacuation",
+      "pin": {
+        "lat": 12.93462,
+        "lon": 80.21309
+      },
+      "extraction": {
+        "needType": "rescue",
+        "people": 3,
+        "vulnerable": [],
+        "locationText": null,
+        "inWater": true,
+        "confidence": 0.94
+      },
+      "truthIncident": "I4"
+    },
+    {
+      "id": "m04",
+      "offsetMin": 18,
+      "channel": "telegram",
+      "senderId": "u-I1-3",
+      "text": "Velachery 100ft road - old couple + 3 others trapped, elderly man is diabetic",
+      "extraction": {
+        "needType": "rescue",
+        "people": 5,
+        "vulnerable": [
+          "elderly"
+        ],
+        "locationText": "Velachery 100ft road",
+        "inWater": true,
+        "confidence": 0.89
+      },
+      "truthIncident": "I1"
+    },
+    {
+      "id": "m16",
+      "offsetMin": 19,
+      "channel": "telegram",
+      "senderId": "u-I3-0",
+      "text": "Saidapet near bridge - my father fell and hurt his head, bleeding, cannot take him out, 2 of us",
+      "extraction": {
+        "needType": "medical",
+        "people": 2,
+        "vulnerable": [
+          "injured"
+        ],
+        "locationText": "Saidapet near bridge",
+        "inWater": false,
+        "confidence": 0.85
+      },
+      "truthIncident": "I3"
+    },
+    {
+      "id": "m11",
+      "offsetMin": 20,
+      "channel": "telegram",
+      "senderId": "u-I2-2",
+      "text": "8 people stuck, need boat urgently",
+      "pin": {
+        "lat": 12.91475,
+        "lon": 80.07051
+      },
+      "extraction": {
+        "needType": "rescue",
+        "people": 8,
+        "vulnerable": [],
+        "locationText": null,
+        "inWater": true,
+        "confidence": 0.88
+      },
+      "truthIncident": "I2"
+    },
+    {
+      "id": "m23",
+      "offsetMin": 23,
+      "channel": "telegram",
+      "senderId": "u-I4-3",
+      "text": "Disabled person + 3 family members trapped in Pallikarnai, ground floor flooded",
+      "extraction": {
+        "needType": "rescue",
+        "people": 4,
+        "vulnerable": [
+          "disabled"
+        ],
+        "locationText": "Pallikarnai",
+        "inWater": true,
+        "confidence": 0.8
+      },
+      "truthIncident": "I4"
+    },
+    {
+      "id": "m05",
+      "offsetMin": 24,
+      "channel": "telegram",
+      "senderId": "u-I1-4",
+      "text": "SOS 4 ppl on terrace water everywhere [photo attached]",
+      "pin": {
+        "lat": 12.98278,
+        "lon": 80.21767
+      },
+      "media": {
+        "type": "photo",
+        "description": "SIMULATED photo: four people on a terrace, brown floodwater up to first-floor windows"
+      },
+      "extraction": {
+        "needType": "rescue",
+        "people": 4,
+        "vulnerable": [],
+        "locationText": null,
+        "inWater": true,
+        "confidence": 0.78
+      },
+      "truthIncident": "I1"
+    },
+    {
+      "id": "m17",
+      "offsetMin": 25,
+      "channel": "telegram",
+      "senderId": "u-I3-0",
+      "text": "need ambulance, one injured person",
+      "pin": {
+        "lat": 13.02017,
+        "lon": 80.22248
+      },
+      "extraction": {
+        "needType": "medical",
+        "people": 1,
+        "vulnerable": [],
+        "locationText": null,
+        "inWater": false,
+        "confidence": 0.88
+      },
+      "truthIncident": "I3"
+    },
+    {
+      "id": "m25",
+      "offsetMin": 28,
+      "channel": "telegram",
+      "senderId": "u-I5-0",
+      "text": "20 people in an apartment in Kotturpuram, no food or drinking water for 2 days. we are on upper floors",
+      "extraction": {
+        "needType": "supplies",
+        "people": 20,
+        "vulnerable": [],
+        "locationText": "Kotturpuram",
+        "inWater": false,
+        "confidence": 0.73
+      },
+      "truthIncident": "I5"
+    },
+    {
+      "id": "m06",
+      "offsetMin": 29,
+      "channel": "telegram",
+      "senderId": "u-I1-5",
+      "text": "Our neighbours (4 people) in Velachery need boat, ground floor fully under water",
+      "extraction": {
+        "needType": "rescue",
+        "people": 4,
+        "vulnerable": [],
+        "locationText": "Velachery",
+        "inWater": true,
+        "confidence": 0.74
+      },
+      "truthIncident": "I1"
+    },
+    {
+      "id": "m12",
+      "offsetMin": 30,
+      "channel": "telegram",
+      "senderId": "u-I2-3",
+      "text": "my sister's family in mudichur, 9 people with children, house flooded neck deep",
+      "extraction": {
+        "needType": "rescue",
+        "people": 9,
+        "vulnerable": [
+          "child"
+        ],
+        "locationText": "mudichur",
+        "inWater": true,
+        "confidence": 0.76
+      },
+      "truthIncident": "I2"
+    },
+    {
+      "id": "m18",
+      "offsetMin": 30,
+      "channel": "telegram",
+      "senderId": "u-I3-2",
+      "text": "West Jones Road Saidapet, injured man and his son need medical help",
+      "extraction": {
+        "needType": "medical",
+        "people": 2,
+        "vulnerable": [],
+        "locationText": "West Jones Road, Saidapet",
+        "inWater": false,
+        "confidence": 0.82
+      },
+      "truthIncident": "I3"
+    },
+    {
+      "id": "m24",
+      "offsetMin": 31,
+      "channel": "telegram",
+      "senderId": "u-I4-4",
+      "text": "3 ppl stranded water chest level",
+      "pin": {
+        "lat": 12.93505,
+        "lon": 80.21325
+      },
+      "extraction": {
+        "needType": "rescue",
+        "people": 3,
+        "vulnerable": [],
+        "locationText": null,
+        "inWater": true,
+        "confidence": 0.82
+      },
+      "truthIncident": "I4"
+    },
+    {
+      "id": "m13",
+      "offsetMin": 35,
+      "channel": "telegram",
+      "senderId": "u-I2-4",
+      "text": "area completely flooded, about 8 people on a terrace on 2nd street",
+      "pin": {
+        "lat": 12.9167,
+        "lon": 80.0699
+      },
+      "extraction": {
+        "needType": "rescue",
+        "people": 8,
+        "vulnerable": [],
+        "locationText": null,
+        "inWater": true,
+        "confidence": 0.8
+      },
+      "truthIncident": "I2"
+    },
+    {
+      "id": "m26",
+      "offsetMin": 36,
+      "channel": "telegram",
+      "senderId": "u-I5-0",
+      "text": "apartment: 20 of us, need food and water, we are safe upstairs",
+      "pin": {
+        "lat": 13.01849,
+        "lon": 80.24223
+      },
+      "extraction": {
+        "needType": "supplies",
+        "people": 20,
+        "vulnerable": [],
+        "locationText": null,
+        "inWater": false,
+        "confidence": 0.76
+      },
+      "truthIncident": "I5"
+    },
+    {
+      "id": "m07",
+      "offsetMin": 37,
+      "channel": "telegram",
+      "senderId": "u-I1-6",
+      "text": "5 people inc. elderly lady stuck. Phone battery 10%",
+      "pin": {
+        "lat": 12.98267,
+        "lon": 80.21877
+      },
+      "extraction": {
+        "needType": "rescue",
+        "people": 5,
+        "vulnerable": [
+          "elderly"
+        ],
+        "locationText": null,
+        "inWater": true,
+        "confidence": 0.86
+      },
+      "truthIncident": "I1"
+    },
+    {
+      "id": "m19",
+      "offsetMin": 39,
+      "channel": "telegram",
+      "senderId": "u-I3-3",
+      "text": "Head injury patient still waiting for ambulance",
+      "pin": {
+        "lat": 13.02,
+        "lon": 80.22289
+      },
+      "extraction": {
+        "needType": "medical",
+        "people": 1,
+        "vulnerable": [
+          "injured"
+        ],
+        "locationText": null,
+        "inWater": false,
+        "confidence": 0.78
+      },
+      "truthIncident": "I3"
+    },
+    {
+      "id": "m08",
+      "offsetMin": 41,
+      "channel": "telegram",
+      "senderId": "u-I1-7",
+      "text": "4 members stranded Vijaya Nagar, water rising fast",
+      "extraction": {
+        "needType": "rescue",
+        "people": 4,
+        "vulnerable": [],
+        "locationText": "Vijaya Nagar",
+        "inWater": true,
+        "confidence": 0.93
+      },
+      "truthIncident": "I1"
+    },
+    {
+      "id": "m14",
+      "offsetMin": 41,
+      "channel": "telegram",
+      "senderId": "u-I2-5",
+      "text": "8 people waiting for rescue at Mudichur, no food since morning",
+      "extraction": {
+        "needType": "rescue",
+        "people": 8,
+        "vulnerable": [],
+        "locationText": "Mudichur",
+        "inWater": true,
+        "confidence": 0.83
+      },
+      "truthIncident": "I2"
+    },
+    {
+      "id": "m28",
+      "offsetMin": 41,
+      "channel": "telegram",
+      "senderId": "u-I6-0",
+      "text": "Tambaram, 3 people stuck at home need rescue",
+      "extraction": {
+        "needType": "rescue",
+        "people": 3,
+        "vulnerable": [],
+        "locationText": "Tambaram",
+        "inWater": false,
+        "confidence": 0.84
+      },
+      "truthIncident": "I6"
+    },
+    {
+      "id": "m27",
+      "offsetMin": 43,
+      "channel": "telegram",
+      "senderId": "u-I5-2",
+      "text": "please send food packets to Kotturpuram, around 19 people",
+      "extraction": {
+        "needType": "supplies",
+        "people": 19,
+        "vulnerable": [],
+        "locationText": "Kotturpuram",
+        "inWater": false,
+        "confidence": 0.79
+      },
+      "truthIncident": "I5"
+    },
+    {
+      "id": "m29",
+      "offsetMin": 44,
+      "channel": "telegram",
+      "senderId": "u-I6-0",
+      "text": "We are 2 people, need rescue",
+      "pin": {
+        "lat": 12.92416,
+        "lon": 80.10021
+      },
+      "extraction": {
+        "needType": "rescue",
+        "people": 2,
+        "vulnerable": [],
+        "locationText": null,
+        "inWater": false,
+        "confidence": 0.74
+      },
+      "truthIncident": "I6"
+    },
+    {
+      "id": "m15",
+      "offsetMin": 47,
+      "channel": "telegram",
+      "senderId": "u-I2-6",
+      "text": "Kids crying, 9 of us on roof. please send boat",
+      "pin": {
+        "lat": 12.91689,
+        "lon": 80.07021
+      },
+      "extraction": {
+        "needType": "rescue",
+        "people": 9,
+        "vulnerable": [
+          "child"
+        ],
+        "locationText": null,
+        "inWater": true,
+        "confidence": 0.76
+      },
+      "truthIncident": "I2"
+    },
+    {
+      "id": "m30",
+      "offsetMin": 52,
+      "channel": "telegram",
+      "senderId": "u-I6-2",
+      "text": "Tambaram east, 2 people waiting for rescue",
+      "extraction": {
+        "needType": "rescue",
+        "people": 2,
+        "vulnerable": [],
+        "locationText": "Tambaram east",
+        "inWater": false,
+        "confidence": 0.87
+      },
+      "truthIncident": "I6"
+    }
+  ]
+}
