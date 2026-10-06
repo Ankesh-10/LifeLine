@@ -1,0 +1,24 @@
+{
+  "weights": {
+    "severity": 0.3,
+    "vulnerability": 0.2,
+    "people": 0.1,
+    "waterRisk": 0.15,
+    "reports": 0.1,
+    "waiting": 0.15
+  },
+  "evidenceMultiplier": {
+    "corroborated": 1.0,
+    "unverified": 0.85,
+    "contradicted": 0.5,
+    "stale": 0.6
+  },
+  "caps": {
+    "people": 50,
+    "reports": 10,
+    "waitingMinutes": 120,
+    "trendMPerHour": 0.2,
+    "rainMm3h": 60,
+    "waterBandM": 1.0
+  }
+}
