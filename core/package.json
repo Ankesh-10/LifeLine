@@ -1,0 +1,25 @@
+{
+  "name": "lifeline-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lifeline reasoning core: clustering, evidence fusion, scoring, matching, lifecycle and autonomy policy. No n8n dependency.",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "files": [
+    "src",
+    "config"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^15.0.0"
+  }
+}
