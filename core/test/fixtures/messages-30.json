@@ -1,0 +1,408 @@
+[
+  {
+    "id": "m01",
+    "senderId": "u-I1-0",
+    "sentAt": "2026-12-01T03:00:00.000Z",
+    "lat": 12.98243,
+    "lon": 80.21798,
+    "needType": "rescue",
+    "people": 5,
+    "vulnerable": [
+      "elderly"
+    ],
+    "confidence": 0.91,
+    "inWater": true,
+    "truthIncident": "I1"
+  },
+  {
+    "id": "m02",
+    "senderId": "u-I1-0",
+    "sentAt": "2026-12-01T03:07:00.000Z",
+    "lat": 12.98024,
+    "lon": 80.21829,
+    "needType": "rescue",
+    "people": 5,
+    "vulnerable": [],
+    "confidence": 0.77,
+    "inWater": true,
+    "truthIncident": "I1"
+  },
+  {
+    "id": "m03",
+    "senderId": "u-I1-2",
+    "sentAt": "2026-12-01T03:11:00.000Z",
+    "lat": 12.98149,
+    "lon": 80.21776,
+    "needType": "rescue",
+    "people": 4,
+    "vulnerable": [],
+    "confidence": 0.87,
+    "inWater": true,
+    "truthIncident": "I1"
+  },
+  {
+    "id": "m04",
+    "senderId": "u-I1-3",
+    "sentAt": "2026-12-01T03:18:00.000Z",
+    "lat": 12.98176,
+    "lon": 80.21914,
+    "needType": "rescue",
+    "people": 5,
+    "vulnerable": [
+      "elderly"
+    ],
+    "confidence": 0.89,
+    "inWater": true,
+    "truthIncident": "I1"
+  },
+  {
+    "id": "m05",
+    "senderId": "u-I1-4",
+    "sentAt": "2026-12-01T03:24:00.000Z",
+    "lat": 12.98278,
+    "lon": 80.21767,
+    "needType": "rescue",
+    "people": 4,
+    "vulnerable": [],
+    "confidence": 0.78,
+    "inWater": true,
+    "truthIncident": "I1"
+  },
+  {
+    "id": "m06",
+    "senderId": "u-I1-5",
+    "sentAt": "2026-12-01T03:29:00.000Z",
+    "lat": 12.98046,
+    "lon": 80.21679,
+    "needType": "rescue",
+    "people": 4,
+    "vulnerable": [],
+    "confidence": 0.74,
+    "inWater": true,
+    "truthIncident": "I1"
+  },
+  {
+    "id": "m07",
+    "senderId": "u-I1-6",
+    "sentAt": "2026-12-01T03:37:00.000Z",
+    "lat": 12.98267,
+    "lon": 80.21877,
+    "needType": "rescue",
+    "people": 5,
+    "vulnerable": [
+      "elderly"
+    ],
+    "confidence": 0.86,
+    "inWater": true,
+    "truthIncident": "I1"
+  },
+  {
+    "id": "m08",
+    "senderId": "u-I1-7",
+    "sentAt": "2026-12-01T03:41:00.000Z",
+    "lat": 12.98237,
+    "lon": 80.2174,
+    "needType": "rescue",
+    "people": 4,
+    "vulnerable": [],
+    "confidence": 0.93,
+    "inWater": true,
+    "truthIncident": "I1"
+  },
+  {
+    "id": "m09",
+    "senderId": "u-I2-0",
+    "sentAt": "2026-12-01T03:09:00.000Z",
+    "needType": "rescue",
+    "people": 9,
+    "vulnerable": [
+      "child"
+    ],
+    "confidence": 0.8,
+    "inWater": true,
+    "truthIncident": "I2"
+  },
+  {
+    "id": "m10",
+    "senderId": "u-I2-0",
+    "sentAt": "2026-12-01T03:15:00.000Z",
+    "lat": 12.91491,
+    "lon": 80.06969,
+    "needType": "rescue",
+    "people": 8,
+    "vulnerable": [],
+    "confidence": 0.76,
+    "inWater": true,
+    "truthIncident": "I2"
+  },
+  {
+    "id": "m11",
+    "senderId": "u-I2-2",
+    "sentAt": "2026-12-01T03:20:00.000Z",
+    "lat": 12.91475,
+    "lon": 80.07051,
+    "needType": "rescue",
+    "people": 8,
+    "vulnerable": [],
+    "confidence": 0.88,
+    "inWater": true,
+    "truthIncident": "I2"
+  },
+  {
+    "id": "m12",
+    "senderId": "u-I2-3",
+    "sentAt": "2026-12-01T03:30:00.000Z",
+    "lat": 12.91594,
+    "lon": 80.06937,
+    "needType": "rescue",
+    "people": 9,
+    "vulnerable": [
+      "child"
+    ],
+    "confidence": 0.76,
+    "inWater": true,
+    "truthIncident": "I2"
+  },
+  {
+    "id": "m13",
+    "senderId": "u-I2-4",
+    "sentAt": "2026-12-01T03:35:00.000Z",
+    "lat": 12.9167,
+    "lon": 80.0699,
+    "needType": "rescue",
+    "people": 8,
+    "vulnerable": [],
+    "confidence": 0.8,
+    "inWater": true,
+    "truthIncident": "I2"
+  },
+  {
+    "id": "m14",
+    "senderId": "u-I2-5",
+    "sentAt": "2026-12-01T03:41:00.000Z",
+    "lat": 12.91436,
+    "lon": 80.07145,
+    "needType": "rescue",
+    "people": 8,
+    "vulnerable": [],
+    "confidence": 0.83,
+    "inWater": true,
+    "truthIncident": "I2"
+  },
+  {
+    "id": "m15",
+    "senderId": "u-I2-6",
+    "sentAt": "2026-12-01T03:47:00.000Z",
+    "lat": 12.91689,
+    "lon": 80.07021,
+    "needType": "rescue",
+    "people": 9,
+    "vulnerable": [
+      "child"
+    ],
+    "confidence": 0.76,
+    "inWater": true,
+    "truthIncident": "I2"
+  },
+  {
+    "id": "m16",
+    "senderId": "u-I3-0",
+    "sentAt": "2026-12-01T03:19:00.000Z",
+    "lat": 13.02037,
+    "lon": 80.22358,
+    "needType": "medical",
+    "people": 2,
+    "vulnerable": [
+      "injured"
+    ],
+    "confidence": 0.85,
+    "inWater": false,
+    "truthIncident": "I3"
+  },
+  {
+    "id": "m17",
+    "senderId": "u-I3-0",
+    "sentAt": "2026-12-01T03:25:00.000Z",
+    "lat": 13.02017,
+    "lon": 80.22248,
+    "needType": "medical",
+    "people": 1,
+    "vulnerable": [],
+    "confidence": 0.88,
+    "inWater": false,
+    "truthIncident": "I3"
+  },
+  {
+    "id": "m18",
+    "senderId": "u-I3-2",
+    "sentAt": "2026-12-01T03:30:00.000Z",
+    "lat": 13.02058,
+    "lon": 80.22183,
+    "needType": "medical",
+    "people": 2,
+    "vulnerable": [],
+    "confidence": 0.82,
+    "inWater": false,
+    "truthIncident": "I3"
+  },
+  {
+    "id": "m19",
+    "senderId": "u-I3-3",
+    "sentAt": "2026-12-01T03:39:00.000Z",
+    "lat": 13.02,
+    "lon": 80.22289,
+    "needType": "medical",
+    "people": 1,
+    "vulnerable": [
+      "injured"
+    ],
+    "confidence": 0.78,
+    "inWater": false,
+    "truthIncident": "I3"
+  },
+  {
+    "id": "m20",
+    "senderId": "u-I4-0",
+    "sentAt": "2026-12-01T03:03:00.000Z",
+    "lat": 12.93565,
+    "lon": 80.21433,
+    "needType": "rescue",
+    "people": 4,
+    "vulnerable": [
+      "disabled"
+    ],
+    "confidence": 0.94,
+    "inWater": true,
+    "truthIncident": "I4"
+  },
+  {
+    "id": "m21",
+    "senderId": "u-I4-0",
+    "sentAt": "2026-12-01T03:12:00.000Z",
+    "needType": "rescue",
+    "people": 3,
+    "vulnerable": [],
+    "confidence": 0.8,
+    "inWater": true,
+    "truthIncident": "I4"
+  },
+  {
+    "id": "m22",
+    "senderId": "u-I4-2",
+    "sentAt": "2026-12-01T03:16:00.000Z",
+    "lat": 12.93462,
+    "lon": 80.21309,
+    "needType": "rescue",
+    "people": 3,
+    "vulnerable": [],
+    "confidence": 0.94,
+    "inWater": true,
+    "truthIncident": "I4"
+  },
+  {
+    "id": "m23",
+    "senderId": "u-I4-3",
+    "sentAt": "2026-12-01T03:23:00.000Z",
+    "lat": 12.93455,
+    "lon": 80.21413,
+    "needType": "rescue",
+    "people": 4,
+    "vulnerable": [
+      "disabled"
+    ],
+    "confidence": 0.8,
+    "inWater": true,
+    "truthIncident": "I4"
+  },
+  {
+    "id": "m24",
+    "senderId": "u-I4-4",
+    "sentAt": "2026-12-01T03:31:00.000Z",
+    "lat": 12.93505,
+    "lon": 80.21325,
+    "needType": "rescue",
+    "people": 3,
+    "vulnerable": [],
+    "confidence": 0.82,
+    "inWater": true,
+    "truthIncident": "I4"
+  },
+  {
+    "id": "m25",
+    "senderId": "u-I5-0",
+    "sentAt": "2026-12-01T03:28:00.000Z",
+    "lat": 13.01746,
+    "lon": 80.24057,
+    "needType": "supplies",
+    "people": 20,
+    "vulnerable": [],
+    "confidence": 0.73,
+    "inWater": false,
+    "truthIncident": "I5"
+  },
+  {
+    "id": "m26",
+    "senderId": "u-I5-0",
+    "sentAt": "2026-12-01T03:36:00.000Z",
+    "lat": 13.01849,
+    "lon": 80.24223,
+    "needType": "supplies",
+    "people": 20,
+    "vulnerable": [],
+    "confidence": 0.76,
+    "inWater": false,
+    "truthIncident": "I5"
+  },
+  {
+    "id": "m27",
+    "senderId": "u-I5-2",
+    "sentAt": "2026-12-01T03:43:00.000Z",
+    "lat": 13.01826,
+    "lon": 80.24172,
+    "needType": "supplies",
+    "people": 19,
+    "vulnerable": [],
+    "confidence": 0.79,
+    "inWater": false,
+    "truthIncident": "I5"
+  },
+  {
+    "id": "m28",
+    "senderId": "u-I6-0",
+    "sentAt": "2026-12-01T03:41:00.000Z",
+    "lat": 12.92616,
+    "lon": 80.10036,
+    "needType": "rescue",
+    "people": 3,
+    "vulnerable": [],
+    "confidence": 0.84,
+    "inWater": false,
+    "truthIncident": "I6"
+  },
+  {
+    "id": "m29",
+    "senderId": "u-I6-0",
+    "sentAt": "2026-12-01T03:44:00.000Z",
+    "lat": 12.92416,
+    "lon": 80.10021,
+    "needType": "rescue",
+    "people": 2,
+    "vulnerable": [],
+    "confidence": 0.74,
+    "inWater": false,
+    "truthIncident": "I6"
+  },
+  {
+    "id": "m30",
+    "senderId": "u-I6-2",
+    "sentAt": "2026-12-01T03:52:00.000Z",
+    "lat": 12.92617,
+    "lon": 80.09909,
+    "needType": "rescue",
+    "people": 2,
+    "vulnerable": [],
+    "confidence": 0.87,
+    "inWater": false,
+    "truthIncident": "I6"
+  }
+]
