@@ -1,0 +1,61 @@
+# Lifeline local stack: n8n (with lifeline-core baked in) + Postgres/PostGIS.
+# SIMULATED demo only.
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db:/lifeline/db:ro # migrations + seeds, applied by scripts/migrate.sh
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  n8n:
+    build:
+      context: .
+      dockerfile: infra/n8n/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    environment:
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      WEBHOOK_URL: ${WEBHOOK_URL}
+      GENERIC_TIMEZONE: ${GENERIC_TIMEZONE}
+      TZ: ${GENERIC_TIMEZONE}
+      # Lets Code nodes call require('lifeline-core').
+      NODE_FUNCTION_ALLOW_EXTERNAL: lifeline-core
+      # Workflows read these via $env; keep LLM provider swappable.
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      LLM_PROVIDER: ${LLM_PROVIDER}
+      LLM_API_KEY: ${LLM_API_KEY}
+      LLM_MODEL_EXTRACT: ${LLM_MODEL_EXTRACT}
+      LLM_MODEL_CLASSIFY: ${LLM_MODEL_CLASSIFY}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      COORDINATOR_CHAT_ID: ${COORDINATOR_CHAT_ID}
+      WEATHER_API_URL: ${WEATHER_API_URL}
+      SIM_MODE: ${SIM_MODE}
+      # Lifeline DB connection (create the n8n Postgres credential with these values).
+      LIFELINE_DB_HOST: db
+      LIFELINE_DB_NAME: ${POSTGRES_DB}
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # reach sim/mock-feeds.js on the host
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n/workflows:/lifeline/workflows # used by scripts/import-workflows.sh
+
+volumes:
+  db_data:
+  n8n_data:

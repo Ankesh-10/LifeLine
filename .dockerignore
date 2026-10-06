@@ -1,0 +1,7 @@
+# Build context is the repo root; only core/ is copied into the n8n image.
+**/node_modules
+.git
+.env
+.env.*
+bench/results
+sim/cache
