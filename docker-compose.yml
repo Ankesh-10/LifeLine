@@ -40,13 +40,22 @@ services:
       # Workflows read these via $env; keep LLM provider swappable.
       N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
       LLM_PROVIDER: ${LLM_PROVIDER}
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
       LLM_API_KEY: ${LLM_API_KEY}
       LLM_MODEL_EXTRACT: ${LLM_MODEL_EXTRACT}
       LLM_MODEL_CLASSIFY: ${LLM_MODEL_CLASSIFY}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_WEBHOOK_SECRET: ${TELEGRAM_WEBHOOK_SECRET:-}
       COORDINATOR_CHAT_ID: ${COORDINATOR_CHAT_ID}
       WEATHER_API_URL: ${WEATHER_API_URL}
       SIM_MODE: ${SIM_MODE}
+      SIM_BOT_URL: ${SIM_BOT_URL:-http://host.docker.internal:4020}
+      # Human-in-the-loop tuning (see core/config/policy.json and lifecycle WATCHDOG_DEFAULTS).
+      POLICY_MODE: ${POLICY_MODE:-}
+      APPROVAL_TIMEOUT_MINUTES: ${APPROVAL_TIMEOUT_MINUTES:-5}
+      WATCHDOG_ACK_MINUTES: ${WATCHDOG_ACK_MINUTES:-5}
+      WATCHDOG_HEARTBEAT_MINUTES: ${WATCHDOG_HEARTBEAT_MINUTES:-15}
+      WATCHDOG_CONFIRM_MINUTES: ${WATCHDOG_CONFIRM_MINUTES:-30}
       # Lifeline DB connection (create the n8n Postgres credential with these values).
       LIFELINE_DB_HOST: db
       LIFELINE_DB_NAME: ${POSTGRES_DB}

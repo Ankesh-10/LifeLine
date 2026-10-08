@@ -11,4 +11,6 @@ USER root
 COPY core/package.json /usr/local/lib/node_modules/n8n/node_modules/lifeline-core/package.json
 COPY core/src          /usr/local/lib/node_modules/n8n/node_modules/lifeline-core/src
 COPY core/config       /usr/local/lib/node_modules/n8n/node_modules/lifeline-core/config
+# Versioned LLM prompts; core/src/llm.js looks for them next to src/.
+COPY n8n/prompts       /usr/local/lib/node_modules/n8n/node_modules/lifeline-core/prompts
 USER node

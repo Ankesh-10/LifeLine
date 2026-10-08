@@ -1,4 +1,4 @@
-# Build context is the repo root; only core/ is copied into the n8n image.
+# Build context is the repo root; only core/ and n8n/prompts are copied into the n8n image.
 **/node_modules
 .git
 .env
