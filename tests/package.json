@@ -1,0 +1,18 @@
+{
+  "name": "lifeline-tests",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Integration tests without Docker: the SQL on in-process Postgres + PostGIS (PGlite), and the n8n workflow JSON run by a small emulator against it. tests/e2e needs the live stack.",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test --test-concurrency=1 \"db/*.test.js\" \"n8n/*.test.js\""
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "@electric-sql/pglite-postgis": "0.2.8"
+  }
+}
