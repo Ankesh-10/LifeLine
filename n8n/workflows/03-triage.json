@@ -1,0 +1,200 @@
+{
+  "id": "lifeline03triage",
+  "name": "03-triage",
+  "nodes": [
+    {
+      "name": "Every 20 seconds",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 20
+            }
+          ]
+        }
+      },
+      "id": "53f765e1-e16d-54ba-a8d5-2b4074007a79"
+    },
+    {
+      "name": "Load triage input",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT lifeline_triage_input() AS input",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lifelinePostgres1",
+          "name": "Lifeline DB"
+        }
+      },
+      "id": "242f2f70-6f10-53ac-a437-9ad26d3dc3fd"
+    },
+    {
+      "name": "Triage",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// cluster -> fuse -> score (lifeline-core). Nothing to write = stop here.\nconst core = require('lifeline-core');\nconst plan = core.pipeline.triage($input.first().json.input);\nreturn plan.hasChanges ? [{ json: { sqlArg: core.pipeline.sqlJson(plan) } }] : [];"
+      },
+      "id": "841c93ba-6d19-5d15-a591-6423218a8cd9"
+    },
+    {
+      "name": "Apply triage",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT lifeline_apply_triage({{ $json.sqlArg }}::jsonb) AS result",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lifelinePostgres1",
+          "name": "Lifeline DB"
+        }
+      },
+      "id": "5295126f-20c2-5a81-ab6d-5f020086f549"
+    },
+    {
+      "name": "Needs dispatch?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "ad2bd5f2-fe60-59c2-a6fc-37f418690a82",
+              "leftValue": "={{ $json.result.needsDispatch > 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "12c602c9-8974-58e2-a95e-162dbaed7c36"
+    },
+    {
+      "name": "Run 04-dispatch",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        -100
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "value": "lifeline04dispat",
+          "mode": "id"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "id": "7f9b9023-b04a-573a-a554-d36a6aa8884c"
+    }
+  ],
+  "connections": {
+    "Every 20 seconds": {
+      "main": [
+        [
+          {
+            "node": "Load triage input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load triage input": {
+      "main": [
+        [
+          {
+            "node": "Triage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Triage": {
+      "main": [
+        [
+          {
+            "node": "Apply triage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply triage": {
+      "main": [
+        [
+          {
+            "node": "Needs dispatch?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs dispatch?": {
+      "main": [
+        [
+          {
+            "node": "Run 04-dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "lifeline99errors"
+  },
+  "active": false,
+  "pinData": {}
+}
