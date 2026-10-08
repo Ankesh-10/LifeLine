@@ -1,0 +1,387 @@
+{
+  "id": "lifeline04dispat",
+  "name": "04-dispatch",
+  "nodes": [
+    {
+      "name": "Every 30 seconds",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "3d3c64e5-56a1-5559-a14d-5ea0109dd439"
+    },
+    {
+      "name": "Called by 03/05/06",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        200
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "21303fb1-88dd-5f5a-a539-99916dcbde2a"
+    },
+    {
+      "name": "Load dispatch input",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        220,
+        100
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT lifeline_dispatch_input() AS input",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lifelinePostgres1",
+          "name": "Lifeline DB"
+        }
+      },
+      "executeOnce": true,
+      "id": "d7034560-8e53-53be-a6a7-4a637fd34565"
+    },
+    {
+      "name": "Plan dispatch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        100
+      ],
+      "parameters": {
+        "jsCode": "// match -> policy (lifeline-core). Approval depends on the risk of being wrong, not urgency.\nconst core = require('lifeline-core');\nconst plan = core.pipeline.planDispatch($input.first().json.input, { policyConfig: core.pipeline.policyFromEnv($env) });\nreturn plan.hasDispatches ? [{ json: { sqlArg: core.pipeline.sqlJson(plan) } }] : [];"
+      },
+      "id": "69696d62-09ca-5f03-a87b-7959266234cd"
+    },
+    {
+      "name": "Apply dispatch",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        660,
+        100
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT lifeline_apply_dispatch({{ $json.sqlArg }}::jsonb) AS result",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lifelinePostgres1",
+          "name": "Lifeline DB"
+        }
+      },
+      "id": "0ca420b8-8ccb-5188-ac03-1d406f2dcad1"
+    },
+    {
+      "name": "Split dispatches",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        100
+      ],
+      "parameters": {
+        "jsCode": "const core = require('lifeline-core');\nreturn $input.first().json.result.dispatches.map((d) => ({ json: { ...d, delivery: core.messages.deliveryFor(d, $env) } }));"
+      },
+      "id": "b6d18fa1-a5eb-517d-a09a-29c06c28d58c"
+    },
+    {
+      "name": "Needs approval?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        100
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "fc131a85-69ae-5411-a419-a450d14bccda",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "awaiting_approval",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "80da3f9b-1f80-5a9e-aa38-05f0557f9e66"
+    },
+    {
+      "name": "Ask coordinator",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        1320,
+        0
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "value": "lifeline04approv",
+          "mode": "id"
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "id": "605ced88-4664-52a4-a61b-5ccb74fd848c"
+    },
+    {
+      "name": "Has channel?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        250
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "d18dccc0-3f5f-5406-a979-418d13949312",
+              "leftValue": "={{ $json.delivery.channel !== 'none' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e66e0777-3c0a-5ebf-a228-6ea0de1d2831"
+    },
+    {
+      "name": "Notify responder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1540,
+        150
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.delivery.channel === 'telegram' ? 'https://api.telegram.org/bot' + $env.TELEGRAM_BOT_TOKEN + '/sendMessage' : $json.delivery.url }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.delivery.body) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000,
+      "onError": "continueRegularOutput",
+      "id": "53a96cb4-8bc3-58ff-a369-75809e06a347"
+    },
+    {
+      "name": "Delivery audit",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        250
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const core = require('lifeline-core');\nconst d = $('Split dispatches').item.json;\nconst response = d.delivery.channel === 'none' ? {} : $json;\nreturn { json: { sqlArg: core.pipeline.sqlJson(core.pipeline.deliveryEvent(d, d.delivery, response)) } };"
+      },
+      "id": "6e9e6dcb-1ad1-5171-a57d-4f6f01a4b120"
+    },
+    {
+      "name": "Log delivery",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1980,
+        250
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT lifeline_log({{ $json.sqlArg }}::jsonb) AS result",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lifelinePostgres1",
+          "name": "Lifeline DB"
+        }
+      },
+      "id": "af15d142-d132-5117-a30d-67289c7211c9"
+    }
+  ],
+  "connections": {
+    "Has channel?": {
+      "main": [
+        [
+          {
+            "node": "Notify responder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delivery audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify responder": {
+      "main": [
+        [
+          {
+            "node": "Delivery audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delivery audit": {
+      "main": [
+        [
+          {
+            "node": "Log delivery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 30 seconds": {
+      "main": [
+        [
+          {
+            "node": "Load dispatch input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Called by 03/05/06": {
+      "main": [
+        [
+          {
+            "node": "Load dispatch input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load dispatch input": {
+      "main": [
+        [
+          {
+            "node": "Plan dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan dispatch": {
+      "main": [
+        [
+          {
+            "node": "Apply dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply dispatch": {
+      "main": [
+        [
+          {
+            "node": "Split dispatches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split dispatches": {
+      "main": [
+        [
+          {
+            "node": "Needs approval?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs approval?": {
+      "main": [
+        [
+          {
+            "node": "Ask coordinator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Has channel?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "lifeline99errors"
+  },
+  "active": false,
+  "pinData": {}
+}

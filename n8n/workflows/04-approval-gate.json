@@ -1,0 +1,543 @@
+{
+  "id": "lifeline04approv",
+  "name": "04-approval-gate",
+  "nodes": [
+    {
+      "name": "Approval request",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "dc7d36c9-6296-5c4d-a862-b21e5e01348b"
+    },
+    {
+      "name": "Prepare request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// One execution per approval, so each request has its own resume URL.\nconst core = require('lifeline-core');\nconst d = $json;\nconst token = core.messages.newApprovalToken();\nconst links = core.messages.approvalLinks($execution.resumeUrl, token);\nconst notice = core.messages.coordinatorNotice(core.messages.approvalText(d, links), $env);\nconst timeoutMinutes = Number($env.APPROVAL_TIMEOUT_MINUTES) || d.approvalTimeoutMinutes || 5;\nconst record = { dispatchId: d.dispatchId, url: $execution.resumeUrl, token, channel: notice.channel, timeoutMinutes, reasons: (d.approvalReasons || []).join('; ') };\nreturn { json: { dispatch: d, token, notice, timeoutMinutes, sqlArg: core.pipeline.sqlJson(record) } };"
+      },
+      "id": "0a4aa360-c8b7-57bc-a3e0-b37ed50c07e5"
+    },
+    {
+      "name": "Store approval link",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT lifeline_set_approval({{ $json.sqlArg }}::jsonb) AS result",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lifelinePostgres1",
+          "name": "Lifeline DB"
+        }
+      },
+      "id": "9c26d4e5-2abd-57fc-aa49-763134610c88"
+    },
+    {
+      "name": "Telegram configured?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c68f70f3-8b65-51c7-a873-cc7ba7d2593b",
+              "leftValue": "={{ $('Prepare request').item.json.notice.channel }}",
+              "rightValue": "telegram",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "328e2fe6-3ac7-57b2-aabc-b6cf9c47e7ee"
+    },
+    {
+      "name": "Message coordinator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        -100
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://api.telegram.org/bot' + $env.TELEGRAM_BOT_TOKEN + '/sendMessage' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('Prepare request').item.json.notice.body) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000,
+      "onError": "continueRegularOutput",
+      "id": "dc62a2c2-7f0c-522c-a748-a3b1349a42a7"
+    },
+    {
+      "name": "Wait for decision",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        0
+      ],
+      "webhookId": "3764db88-e550-5e24-a4bf-bb94609c2446",
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "GET",
+        "limitWaitTime": true,
+        "limitType": "afterTimeInterval",
+        "resumeAmount": "={{ $('Prepare request').item.json.timeoutMinutes }}",
+        "resumeUnit": "minutes",
+        "options": {}
+      },
+      "id": "5eaa5cf9-bfab-5623-a850-5601c07717e9"
+    },
+    {
+      "name": "Read decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Resumed by a link (query has decision + token) or by the timeout (no query).\nconst core = require('lifeline-core');\nconst req = $('Prepare request').item.json;\nconst plan = core.pipeline.planApproval({ dispatch: req.dispatch, query: $json.query, expectedToken: req.token, timedOut: !$json.query, now: new Date().toISOString() });\nreturn { json: { sqlArg: core.pipeline.sqlJson(plan) } };"
+      },
+      "id": "380b4a1b-b363-5887-af88-488df3826c5a"
+    },
+    {
+      "name": "Apply decision",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1540,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT lifeline_apply_approval({{ $json.sqlArg }}::jsonb) AS result",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lifelinePostgres1",
+          "name": "Lifeline DB"
+        }
+      },
+      "id": "a348d5a0-3484-5093-ad8f-c59a9a50634e"
+    },
+    {
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "beae78f5-2689-5d7a-a3b7-5e7949ffcc47",
+              "leftValue": "={{ $json.result.notifyResponder === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cc02829e-2e5d-5258-abbd-9d28e243dd7b"
+    },
+    {
+      "name": "Prepare delivery",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        -100
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const core = require('lifeline-core');\nconst d = $json.result.dispatch;\nreturn { json: { ...d, delivery: core.messages.deliveryFor(d, $env) } };"
+      },
+      "id": "f26b9f86-a30b-5a48-a815-f5e7eb2618e2"
+    },
+    {
+      "name": "Has channel?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2200,
+        -100
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "da438dd8-ef8d-5106-a15c-6904416afcd5",
+              "leftValue": "={{ $json.delivery.channel !== 'none' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "677771fb-dbe0-5bc7-a1d9-c6b7a3927ad7"
+    },
+    {
+      "name": "Notify responder",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2420,
+        -200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.delivery.channel === 'telegram' ? 'https://api.telegram.org/bot' + $env.TELEGRAM_BOT_TOKEN + '/sendMessage' : $json.delivery.url }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.delivery.body) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000,
+      "onError": "continueRegularOutput",
+      "id": "e0c1287a-5d7d-5b94-aedc-5f45873ac439"
+    },
+    {
+      "name": "Delivery audit",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2640,
+        -100
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const core = require('lifeline-core');\nconst d = $('Prepare delivery').item.json;\nconst response = d.delivery.channel === 'none' ? {} : $json;\nreturn { json: { sqlArg: core.pipeline.sqlJson(core.pipeline.deliveryEvent(d, d.delivery, response)) } };"
+      },
+      "id": "688acd17-5c7c-5f2e-aed8-ecded10ee765"
+    },
+    {
+      "name": "Log delivery",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2860,
+        -100
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT lifeline_log({{ $json.sqlArg }}::jsonb) AS result",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lifelinePostgres1",
+          "name": "Lifeline DB"
+        }
+      },
+      "id": "b280bd13-d606-5b66-a3e9-8637bd2713d1"
+    },
+    {
+      "name": "Re-plan?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        150
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c930e8ac-06c7-5f6e-a887-cedb443a32f4",
+              "leftValue": "={{ $json.result.rematch === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "71c15c03-6d8a-5a2d-a20a-6960220e0eae"
+    },
+    {
+      "name": "Run 04-dispatch",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        2200,
+        150
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "value": "lifeline04dispat",
+          "mode": "id"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "id": "bb1c3ab4-14eb-5769-a0ba-3a6f3ded1335"
+    }
+  ],
+  "connections": {
+    "Has channel?": {
+      "main": [
+        [
+          {
+            "node": "Notify responder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delivery audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify responder": {
+      "main": [
+        [
+          {
+            "node": "Delivery audit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delivery audit": {
+      "main": [
+        [
+          {
+            "node": "Log delivery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approval request": {
+      "main": [
+        [
+          {
+            "node": "Prepare request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare request": {
+      "main": [
+        [
+          {
+            "node": "Store approval link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store approval link": {
+      "main": [
+        [
+          {
+            "node": "Telegram configured?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram configured?": {
+      "main": [
+        [
+          {
+            "node": "Message coordinator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message coordinator": {
+      "main": [
+        [
+          {
+            "node": "Wait for decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for decision": {
+      "main": [
+        [
+          {
+            "node": "Read decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read decision": {
+      "main": [
+        [
+          {
+            "node": "Apply decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply decision": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Prepare delivery",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Re-plan?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare delivery": {
+      "main": [
+        [
+          {
+            "node": "Has channel?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-plan?": {
+      "main": [
+        [
+          {
+            "node": "Run 04-dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "lifeline99errors"
+  },
+  "active": false,
+  "pinData": {}
+}
