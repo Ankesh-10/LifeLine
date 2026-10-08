@@ -96,3 +96,9 @@ test('deterministic for identical input', () => {
   };
   assert.deepEqual(matchResources(input), matchResources(input));
 });
+
+test('resources that already failed an incident are excluded from its rematch', () => {
+  const r = matchResources({ incidents: [incident('I', 0, { excludeResourceIds: ['near'] })], resources: [boat('near', 0.5), boat('far', 3)] });
+  assert.equal(byIncident(r).I.resourceId, 'far');
+  assert.deepEqual(byIncident(r).I.rejected, [{ resourceId: 'near', reason: 'already failed or was rejected for this incident' }]);
+});

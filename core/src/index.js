@@ -11,6 +11,10 @@ const score = require('./score');
 const match = require('./match');
 const lifecycle = require('./lifecycle');
 const policy = require('./policy');
+const llm = require('./llm');
+const ingest = require('./ingest');
+const messages = require('./messages');
+const pipeline = require('./pipeline');
 
 module.exports = {
   geo,
@@ -37,4 +41,9 @@ module.exports = {
   match,
   lifecycle,
   policy,
+  // n8n workflow steps: one function per Code node (see pipeline.js).
+  llm,
+  ingest,
+  messages,
+  pipeline,
 };

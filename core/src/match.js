@@ -34,6 +34,7 @@ function allowedTypes(incident) {
 function evaluate(incident, resource, blocks, opts) {
   const reject = (reason) => ({ feasible: false, reason });
   if (resource.status && resource.status !== 'available') return reject(`unavailable (${resource.status})`);
+  if (incident.excludeResourceIds?.includes(resource.id)) return reject('already failed or was rejected for this incident');
 
   const allowed = allowedTypes(incident);
   if (!allowed.includes(resource.type)) {
@@ -61,7 +62,7 @@ function evaluate(incident, resource, blocks, opts) {
 
 /**
  * @param {object} input
- * @param {object[]} input.incidents  { id, score, needType, needs, people, vulnerable, flooded, location: {lat, lon} }
+ * @param {object[]} input.incidents  { id, score, needType, needs, people, vulnerable, flooded, location: {lat, lon}, excludeResourceIds? }
  * @param {object[]} input.resources  { id, type, terrain, capacity, hasMedic, speedKmh, status, location: {lat, lon} }
  * @param {object[]} input.blocks     { location: {lat, lon}, radiusM, appliesTo: 'road'|'water', reason }
  */
