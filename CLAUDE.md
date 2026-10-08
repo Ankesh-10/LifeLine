@@ -6,8 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Lifeline is a backend-only hackathon project: an n8n-based flood-response dispatcher. It turns messy distress messages into ranked incidents, matches them to boats, ambulances and volunteers, dispatches, and verifies help arrived.
 
-- **`PLAN.md` is the source of truth.** It lists 27 planned commits, the files for each, and the order. Check `git log` to see what has landed. Use its commit messages and paths; don't invent a new layout.
-- Built so far: the foundation, the DB schema and the fully tested `core/`. The n8n workflows, simulation, benchmark and CI are still to come.
+- **`PLAN.md` is the source of truth.** It lists 30 planned commits, the files for each, and the order. Check `git log` to see what has landed. Use its commit messages and paths; don't invent a new layout.
+- Built so far:
+  - Committed (1–26): the foundation, the DB schema, `core/`, the simulation, and the workflow steps in core, the workflow SQL (migration 009), the import/export scripts and the n8n workflows. They're verified by PGlite and a workflow emulator, but haven't run in a real n8n yet.
+  - Still to come: the live e2e test, the benchmark, CI and docs.
 
 ## Commit policy (user instruction, standing)
 
@@ -61,10 +63,12 @@ These work now:
 
 | Task | Command |
 |---|---|
-| Core tests (62) | `cd core && npm test` |
+| Core tests (94) | `cd core && npm test` |
 | Single test file | `cd core && node --test test/cluster.test.js` |
 | Lint core | `cd core && npm run lint` (`npm install` first) |
-| Sim tests (17, including the full demo story) | `cd sim && npm test` |
+| Sim tests (17, including the demo story on a static snapshot) | `cd sim && npm test` |
+| SQL + workflow tests (32), no Docker: migrations on PGlite, and the workflow JSON run by an emulator | `cd tests && npm install && npm test` |
+| Print the emulated demo story | `cd tests && LIFELINE_DEBUG=1 node --test n8n/run.test.js` |
 | Mock gauge/rain API on :4010 | `cd sim && npm run feeds` |
 | Responder bot on :4020 | `cd sim && npm run bot` |
 | Replay the scenario into n8n | `cd sim && node replay.js [--speed 20] [--dry-run]` |
@@ -73,18 +77,18 @@ These are written but unverified (Docker isn't installed on the dev machine yet)
 
 | Task | Command |
 |---|---|
-| Start stack + migrate + seed | `scripts/setup.sh`; afterwards `docker compose up -d` |
+| Start stack + migrate + seed + import workflows | `scripts/setup.sh`; afterwards `docker compose up -d` |
 | Re-run migrations / seeds | `scripts/migrate.sh` |
+| Import / export workflows | `scripts/import-workflows.sh` / `scripts/export-workflows.sh` |
 
 These are planned (the files don't exist yet):
 
 | Task | Command |
 |---|---|
-| Import / export workflows | `scripts/import-workflows.sh` / `scripts/export-workflows.sh` |
 | Demo reset | `scripts/reset-demo.sh` |
 | E2E / benchmark | `node --test tests/e2e/` / `node bench/run.js` |
 
-After editing a workflow in the n8n UI, always export it so the JSON in `n8n/workflows/` stays canonical. Exports must strip credentials.
+After editing a workflow in the n8n UI, always run `scripts/export-workflows.sh` so the JSON in `n8n/workflows/` stays canonical; it strips credentials and timestamps, and `tests/n8n/workflows.test.js` fails on an un-normalised export. Each workflow reads with one `lifeline_*_input()` SQL function and writes with one `lifeline_apply_*()` (migration 009), and its Code nodes are one-line calls into `core.pipeline` / `core.ingest` / `core.messages`.
 
 ## Model guide
 

@@ -1,0 +1,250 @@
+{
+  "id": "lifeline06watchd",
+  "name": "06-watchdog",
+  "nodes": [
+    {
+      "name": "Every 30 seconds",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "fb6b712e-e2d8-537d-a7e5-eb48d35c11d0"
+    },
+    {
+      "name": "Load live dispatches",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT lifeline_watchdog_input() AS input",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lifelinePostgres1",
+          "name": "Lifeline DB"
+        }
+      },
+      "id": "fb1be979-61e8-53eb-a7d5-47c847831ba4"
+    },
+    {
+      "name": "Plan watchdog",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Silent teams are reassigned automatically; stuck confirmations escalate once.\nconst core = require('lifeline-core');\nconst plan = core.pipeline.planWatchdog($input.first().json.input, core.pipeline.watchdogOptions($env));\nreturn plan.hasChanges ? [{ json: { notices: plan.notices, sqlArg: core.pipeline.sqlJson(plan) } }] : [];"
+      },
+      "id": "2a421828-a84d-536d-ac92-a7e3870c6abb"
+    },
+    {
+      "name": "Apply watchdog",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT lifeline_apply_watchdog({{ $json.sqlArg }}::jsonb) AS result",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lifelinePostgres1",
+          "name": "Lifeline DB"
+        }
+      },
+      "id": "4401ad49-956a-582f-a5f4-8d45ca719dd4"
+    },
+    {
+      "name": "Reassigned?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        880,
+        -100
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "7b5eb0d4-8a6f-5bcd-a0e0-c5d6698daacd",
+              "leftValue": "={{ $json.result.reassigned > 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ab05bffe-7dff-56d2-a776-18fe8258f9ce"
+    },
+    {
+      "name": "Run 04-dispatch",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        -100
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "value": "lifeline04dispat",
+          "mode": "id"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "id": "376cff9f-8077-519c-ad90-55d893163e31"
+    },
+    {
+      "name": "Coordinator notices",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        150
+      ],
+      "parameters": {
+        "jsCode": "const core = require('lifeline-core');\nreturn ($('Plan watchdog').first().json.notices || [])\n  .map((text) => core.messages.coordinatorNotice(text, $env))\n  .filter((n) => n.channel === 'telegram')\n  .map((notice) => ({ json: { notice } }));"
+      },
+      "id": "4ccb016d-ab85-5c16-af5a-700215f133ef"
+    },
+    {
+      "name": "Message coordinator",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        150
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'https://api.telegram.org/bot' + $env.TELEGRAM_BOT_TOKEN + '/sendMessage' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.notice.body) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "onError": "continueRegularOutput",
+      "id": "e638cb22-3049-53f0-a374-9379e5e3b596"
+    }
+  ],
+  "connections": {
+    "Coordinator notices": {
+      "main": [
+        [
+          {
+            "node": "Message coordinator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 30 seconds": {
+      "main": [
+        [
+          {
+            "node": "Load live dispatches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load live dispatches": {
+      "main": [
+        [
+          {
+            "node": "Plan watchdog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan watchdog": {
+      "main": [
+        [
+          {
+            "node": "Apply watchdog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply watchdog": {
+      "main": [
+        [
+          {
+            "node": "Reassigned?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Coordinator notices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reassigned?": {
+      "main": [
+        [
+          {
+            "node": "Run 04-dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "lifeline99errors"
+  },
+  "active": false,
+  "pinData": {}
+}

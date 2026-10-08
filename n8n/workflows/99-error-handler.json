@@ -1,0 +1,82 @@
+{
+  "id": "lifeline99errors",
+  "name": "99-error-handler",
+  "nodes": [
+    {
+      "name": "On workflow error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {},
+      "id": "ff7b31b5-8eab-57ee-a88d-5939f59f44a9"
+    },
+    {
+      "name": "Error event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const core = require('lifeline-core');\nreturn { json: { sqlArg: core.pipeline.sqlJson(core.pipeline.errorEvent($json)) } };"
+      },
+      "id": "9051cd73-d896-574d-a401-0a75a11b9eeb"
+    },
+    {
+      "name": "Write audit log",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT lifeline_log({{ $json.sqlArg }}::jsonb) AS result",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lifelinePostgres1",
+          "name": "Lifeline DB"
+        }
+      },
+      "id": "69d68697-91bb-5e22-a805-ec5d36fb35c9"
+    }
+  ],
+  "connections": {
+    "On workflow error": {
+      "main": [
+        [
+          {
+            "node": "Error event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error event": {
+      "main": [
+        [
+          {
+            "node": "Write audit log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "active": false,
+  "pinData": {}
+}
