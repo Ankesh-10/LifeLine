@@ -1,0 +1,123 @@
+{
+  "id": "lifeline02condtn",
+  "name": "02-conditions",
+  "nodes": [
+    {
+      "name": "Every 60 seconds",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 60
+            }
+          ]
+        }
+      },
+      "id": "b6a69841-e435-5b35-ac08-c9b2348cf736"
+    },
+    {
+      "name": "Fetch feeds",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ ($env.WEATHER_API_URL || 'http://host.docker.internal:4010').replace(/\\/+$/, '') + '/conditions' }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000,
+      "id": "fa731570-657e-5645-abdf-50c0e22cc21c"
+    },
+    {
+      "name": "Plan conditions",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// SIMULATED gauges and rainfall -> rows\nconst core = require('lifeline-core');\nreturn { json: { sqlArg: core.pipeline.sqlJson(core.pipeline.planConditions($json, new Date().toISOString())) } };"
+      },
+      "id": "7745669c-4e29-5d45-ac7b-8a9dd72f368c"
+    },
+    {
+      "name": "Apply conditions",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT lifeline_apply_conditions({{ $json.sqlArg }}::jsonb) AS result",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "lifelinePostgres1",
+          "name": "Lifeline DB"
+        }
+      },
+      "id": "f1f54cf0-2c27-5f7c-a68e-ddfae5ed4396"
+    }
+  ],
+  "connections": {
+    "Every 60 seconds": {
+      "main": [
+        [
+          {
+            "node": "Fetch feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch feeds": {
+      "main": [
+        [
+          {
+            "node": "Plan conditions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan conditions": {
+      "main": [
+        [
+          {
+            "node": "Apply conditions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "lifeline99errors"
+  },
+  "active": false,
+  "pinData": {}
+}
